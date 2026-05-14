@@ -134,6 +134,11 @@ analyzeBtn.addEventListener('click', async () => {
         loadingState.classList.add('hidden');
         resultsDisplay.classList.remove('hidden');
         
+        // Scroll to results on mobile
+        if (window.innerWidth < 768) {
+            resultsDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+        
         // Animate Circle after a tiny delay to ensure DOM is ready
         setTimeout(() => {
             scoreCircle.style.strokeDashoffset = offset;

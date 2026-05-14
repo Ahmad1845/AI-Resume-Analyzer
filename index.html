@@ -50,10 +50,10 @@
     </script>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="min-h-screen flex flex-col md:flex-row md:overflow-hidden">
 
     <!-- Left Pane: Inputs -->
-    <div class="w-full md:w-5/12 lg:w-1/3 flex flex-col border-r border-border bg-background z-10 h-screen overflow-y-auto">
+    <div class="w-full md:w-5/12 lg:w-1/3 flex flex-col md:border-r border-b md:border-b-0 border-border bg-background z-10 h-auto md:h-screen overflow-y-auto">
         <div class="p-8 flex flex-col h-full">
             <div class="mb-10">
                 <div class="flex items-center justify-between mb-2">
@@ -107,7 +107,7 @@
     </div>
 
     <!-- Right Pane: Results -->
-    <div class="w-full md:w-7/12 lg:w-2/3 flex-1 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMwOTA5MGIiLz48Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMC41IiBmaWxsPSIjMjcyNzJhIi8+PC9zdmc+')] bg-repeat h-screen overflow-y-auto relative">
+    <div class="w-full md:w-7/12 lg:w-2/3 flex-1 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMwOTA5MGIiLz48Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMC41IiBmaWxsPSIjMjcyNzJhIi8+PC9zdmc+')] bg-repeat min-h-screen md:h-screen md:min-h-0 overflow-y-auto relative">
         
         <!-- Empty State -->
         <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center overflow-hidden">
