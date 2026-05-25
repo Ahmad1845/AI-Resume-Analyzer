@@ -94,6 +94,16 @@ function generateSuggestionCards(items) {
     `).join('');
 }
 
+function generateRedFlagCards(items) {
+    if (!items || items.length === 0) return `<div class="text-sm text-muted-foreground italic col-span-2">No red flags detected. Great job!</div>`;
+    return items.map(item => `
+        <li class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex gap-3">
+            <span class="material-symbols-outlined text-red-500 text-lg shrink-0 mt-0.5">error</span>
+            <span class="text-sm text-foreground">${item}</span>
+        </li>
+    `).join('');
+}
+
 // Analysis Execution
 analyzeBtn.addEventListener('click', async () => {
     const cvTextValue = cvTextInput ? cvTextInput.value.trim() : '';
@@ -157,6 +167,7 @@ analyzeBtn.addEventListener('click', async () => {
 
         document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500');
         document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500');
+        document.getElementById('list-red-flags').innerHTML = generateRedFlagCards(data.red_flags);
         document.getElementById('list-suggestions').innerHTML = generateSuggestionCards(data.suggestions);
 
         // UI State to Results
