@@ -16,7 +16,6 @@ const scoreTitle = document.getElementById('score-title');
 const scoreDesc = document.getElementById('score-description');
 const resultJobTitle = document.getElementById('result-job-title');
 const resetBtn = document.getElementById('reset-btn');
-const exportPdfBtn = document.getElementById('export-pdf-btn');
 
 let selectedFile = null;
 
@@ -236,33 +235,5 @@ if (resetBtn) {
         if (emptyState) emptyState.classList.remove('hidden');
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
-
-// PDF Export Functionality
-if (exportPdfBtn) {
-    exportPdfBtn.addEventListener('click', () => {
-        const element = document.getElementById('results-display');
-        
-        // Set solid background so white text doesn't blend into default white canvas
-        const originalBg = element.style.backgroundColor;
-        element.style.backgroundColor = '#09090b';
-
-        const opt = {
-            margin:       0.5,
-            filename:     'Resume_Analysis_Report.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#09090b', scrollY: 0 },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-        };
-        
-        const buttonsContainer = exportPdfBtn.parentElement;
-        const originalDisplay = buttonsContainer.style.display;
-        buttonsContainer.style.display = 'none';
-        
-        html2pdf().set(opt).from(element).save().then(() => {
-            buttonsContainer.style.display = originalDisplay;
-            element.style.backgroundColor = originalBg;
-        });
     });
 }
