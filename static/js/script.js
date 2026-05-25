@@ -243,11 +243,16 @@ if (resetBtn) {
 if (exportPdfBtn) {
     exportPdfBtn.addEventListener('click', () => {
         const element = document.getElementById('results-display');
+        
+        // Set solid background so white text doesn't blend into default white canvas
+        const originalBg = element.style.backgroundColor;
+        element.style.backgroundColor = '#09090b';
+
         const opt = {
             margin:       0.5,
             filename:     'Resume_Analysis_Report.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, backgroundColor: '#09090b', scrollY: 0 },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
         
@@ -257,6 +262,7 @@ if (exportPdfBtn) {
         
         html2pdf().set(opt).from(element).save().then(() => {
             buttonsContainer.style.display = originalDisplay;
+            element.style.backgroundColor = originalBg;
         });
     });
 }
