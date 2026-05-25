@@ -14,6 +14,9 @@ const scoreText = document.getElementById('score-text');
 const scoreCircle = document.getElementById('score-circle');
 const scoreTitle = document.getElementById('score-title');
 const scoreDesc = document.getElementById('score-description');
+const resultJobTitle = document.getElementById('result-job-title');
+const resetBtn = document.getElementById('reset-btn');
+const exportPdfBtn = document.getElementById('export-pdf-btn');
 
 let selectedFile = null;
 
@@ -154,6 +157,12 @@ analyzeBtn.addEventListener('click', async () => {
         const circumference = 54 * 2 * Math.PI;
         const offset = circumference - (score / 100) * circumference;
         
+        if (data.job_title) {
+            resultJobTitle.textContent = data.job_title;
+        } else {
+            resultJobTitle.textContent = '';
+        }
+
         // Color Logic
         scoreCircle.classList.remove('text-chart-1', 'text-chart-2', 'text-chart-3');
         if (score >= 75) {
@@ -209,3 +218,45 @@ analyzeBtn.addEventListener('click', async () => {
         analyzeBtn.innerHTML = `Analyze Resume <span class="material-symbols-outlined ml-2 text-[18px]">arrow_forward</span>`;
     }
 });
+
+// Reset Functionality
+if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+        selectedFile = null;
+        if (fileInput) fileInput.value = '';
+        if (cvTextInput) cvTextInput.value = '';
+        if (jdInput) jdInput.value = '';
+        if (fileNameDisplay) {
+            fileNameDisplay.textContent = 'Click or drag file here';
+            fileNameDisplay.classList.remove('text-primary');
+        }
+        if (uploadZone) uploadZone.classList.remove('border-primary');
+        
+        if (resultsDisplay) resultsDisplay.classList.add('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// PDF Export Functionality
+if (exportPdfBtn) {
+    exportPdfBtn.addEventListener('click', () => {
+        const element = document.getElementById('results-display');
+        const opt = {
+            margin:       0.5,
+            filename:     'Resume_Analysis_Report.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        const buttonsContainer = exportPdfBtn.parentElement;
+        const originalDisplay = buttonsContainer.style.display;
+        buttonsContainer.style.display = 'none';
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            buttonsContainer.style.display = originalDisplay;
+        });
+    });
+}
