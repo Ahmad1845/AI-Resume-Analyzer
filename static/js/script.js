@@ -3,6 +3,7 @@ const uploadZone = document.getElementById('upload-zone');
 const fileInput = document.getElementById('cv-upload');
 const fileNameDisplay = document.getElementById('file-name');
 const jdInput = document.getElementById('jd-input');
+const cvTextInput = document.getElementById('cv-text-input');
 const analyzeBtn = document.getElementById('analyze-btn');
 
 const emptyState = document.getElementById('empty-state');
@@ -43,14 +44,31 @@ fileInput.addEventListener('change', (e) => {
 });
 
 function handleFile(file) {
-    if (file.type !== "application/pdf") {
-        alert("Please upload a PDF file.");
+    const validTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
+    const validExtensions = [".pdf", ".docx", ".txt"];
+    const isValidExt = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    
+    if (!validTypes.includes(file.type) && !isValidExt) {
+        alert("Please upload a PDF, DOCX, or TXT file.");
         return;
     }
     selectedFile = file;
     fileNameDisplay.textContent = file.name;
     fileNameDisplay.classList.add('text-primary');
     uploadZone.classList.add('border-primary');
+    if (cvTextInput) cvTextInput.value = ''; // clear text if file uploaded
+}
+
+if (cvTextInput) {
+    cvTextInput.addEventListener('input', () => {
+        if (cvTextInput.value.trim() !== '') {
+            selectedFile = null;
+            fileNameDisplay.textContent = 'Click or drag file here';
+            fileNameDisplay.classList.remove('text-primary');
+            uploadZone.classList.remove('border-primary');
+            fileInput.value = '';
+        }
+    });
 }
 
 // Generate List Items HTML
@@ -76,8 +94,10 @@ function generateSuggestionCards(items) {
 
 // Analysis Execution
 analyzeBtn.addEventListener('click', async () => {
-    if (!selectedFile) {
-        alert("Please upload a Resume (PDF) first.");
+    const cvTextValue = cvTextInput ? cvTextInput.value.trim() : '';
+    
+    if (!selectedFile && !cvTextValue) {
+        alert("Please upload a Resume or paste your CV text.");
         return;
     }
     if (!jdInput.value.trim()) {
@@ -93,7 +113,8 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeBtn.innerHTML = `Analyzing <span class="material-symbols-outlined ml-2 text-[18px] animate-spin">refresh</span>`;
 
     const formData = new FormData();
-    formData.append("cv", selectedFile);
+    if (selectedFile) formData.append("cv", selectedFile);
+    if (cvTextValue) formData.append("cv_text", cvTextValue);
     formData.append("jd", jdInput.value);
 
     try {

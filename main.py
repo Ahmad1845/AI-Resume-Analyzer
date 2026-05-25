@@ -1,6 +1,7 @@
 import os
 import json
 import PyPDF2
+import docx
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -27,16 +28,34 @@ async def serve_ui():
 
 # 4. This is the logic that reads the PDF and asks Gemini for the analysis
 @app.post("/api/analyze")
-async def analyze_resume(cv: UploadFile = File(...), jd: str = Form(...)):
+async def analyze_resume(
+    jd: str = Form(...), 
+    cv: UploadFile = File(None), 
+    cv_text: str = Form(None)
+):
     try:
-        cv_text = ""
-        reader = PyPDF2.PdfReader(cv.file)
-        for page in reader.pages:
-            extracted = page.extract_text()
-            if extracted:
-                cv_text += extracted + "\n"
+        extracted_cv_text = ""
         
-        user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{cv_text}"
+        if cv and cv.filename:
+            if cv.filename.lower().endswith(".pdf"):
+                reader = PyPDF2.PdfReader(cv.file)
+                for page in reader.pages:
+                    extracted = page.extract_text()
+                    if extracted:
+                        extracted_cv_text += extracted + "\n"
+            elif cv.filename.lower().endswith(".docx"):
+                doc = docx.Document(cv.file)
+                extracted_cv_text = "\n".join([para.text for para in doc.paragraphs])
+            elif cv.filename.lower().endswith(".txt"):
+                extracted_cv_text = (await cv.read()).decode("utf-8")
+            else:
+                return {"error": "Unsupported file format. Please upload PDF, DOCX, or TXT."}
+        elif cv_text and cv_text.strip():
+            extracted_cv_text = cv_text.strip()
+        else:
+            return {"error": "Please provide either a CV file or paste the CV text."}
+        
+        user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{extracted_cv_text}"
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=user_prompt,
