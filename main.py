@@ -56,8 +56,11 @@ async def analyze_resume(
             return {"error": "Please provide either a CV file or paste the CV text."}
         
         user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{extracted_cv_text}"
+        
+        model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+        
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model=model_name,
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -67,7 +70,16 @@ async def analyze_resume(
                 temperature=0.2 
             ),
         )
-        return json.loads(response.text)
+        
+        raw_text = response.text.strip()
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        elif raw_text.startswith("```"):
+            raw_text = raw_text[3:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
+            
+        return json.loads(raw_text.strip())
     
     except Exception as e:
         return {"error": str(e)}

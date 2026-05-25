@@ -78,7 +78,7 @@
                     </label>
                     <div id="upload-zone" class="relative group cursor-pointer rounded-xl border-2 border-dashed border-border bg-card/50 hover:bg-indigo-500/5 hover:border-indigo-500/50 transition-all duration-300 p-8 text-center flex flex-col items-center justify-center min-h-[120px]">
                         <span class="material-symbols-outlined text-4xl text-muted-foreground group-hover:text-indigo-400 transition-colors mb-3 group-hover:scale-110 duration-300">upload_file</span>
-                        <p id="file-name" class="text-sm font-medium text-foreground">Click or drag file here</p>
+                        <p id="file-name" class="text-sm font-medium text-foreground truncate max-w-full px-4">Click or drag file here</p>
                         <p class="text-xs text-muted-foreground mt-1">Maximum size 10MB</p>
                         <input type="file" id="cv-upload" accept="application/pdf,.docx,text/plain" class="hidden">
                     </div>
@@ -87,7 +87,7 @@
                         <span class="flex-shrink-0 mx-4 text-muted-foreground text-xs font-medium uppercase">OR</span>
                         <div class="flex-grow border-t border-border"></div>
                     </div>
-                    <textarea id="cv-text-input" class="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none transition-shadow min-h-[120px]" placeholder="Paste your resume text here instead of uploading..."></textarea>
+                    <textarea id="cv-text-input" class="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none transition-shadow min-h-[120px]" placeholder="Paste your resume text here instead of uploading..." maxlength="50000"></textarea>
                 </div>
 
                 <!-- Job Description -->
@@ -96,7 +96,7 @@
                         <span class="material-symbols-outlined text-[18px] text-purple-400">work</span>
                         2. Job Description
                     </label>
-                    <textarea id="jd-input" class="flex-1 min-h-[200px] w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none transition-shadow" placeholder="Paste the full job description here..."></textarea>
+                    <textarea id="jd-input" class="flex-1 min-h-[200px] w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none transition-shadow" placeholder="Paste the full job description here..." maxlength="50000"></textarea>
                 </div>
             </div>
 

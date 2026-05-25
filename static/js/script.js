@@ -74,12 +74,12 @@ if (cvTextInput) {
 }
 
 // Generate List Items HTML
-function generateListHTML(items, iconColorClass) {
+function generateListHTML(items, iconColorClass, iconName = 'check_circle') {
     if (!items || items.length === 0) return `<li class="text-sm text-muted-foreground italic">None identified.</li>`;
     return items.map(item => `
-        <li class="flex items-start gap-3">
-            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-${iconColorClass} shrink-0"></span>
-            <span class="text-sm text-muted-foreground leading-relaxed">${item}</span>
+        <li class="flex items-start gap-3 hover-card-effect p-2 rounded-lg border border-transparent transition-all">
+            <span class="material-symbols-outlined text-${iconColorClass} text-lg shrink-0 mt-0.5">${iconName}</span>
+            <span class="text-sm text-foreground leading-relaxed">${item}</span>
         </li>
     `).join('');
 }
@@ -165,8 +165,8 @@ analyzeBtn.addEventListener('click', async () => {
             scoreDesc.textContent = "This candidate does not align well with the primary requirements.";
         }
 
-        document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500');
-        document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500');
+        document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500', 'check_circle');
+        document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500', 'warning');
         document.getElementById('list-red-flags').innerHTML = generateRedFlagCards(data.red_flags);
         document.getElementById('list-suggestions').innerHTML = generateSuggestionCards(data.suggestions);
 
@@ -187,6 +187,7 @@ analyzeBtn.addEventListener('click', async () => {
     } catch (e) {
         alert("Error during analysis: " + e.message);
         loadingState.classList.add('hidden');
+        resultsDisplay.classList.add('hidden');
         emptyState.classList.remove('hidden');
     } finally {
         analyzeBtn.disabled = false;
