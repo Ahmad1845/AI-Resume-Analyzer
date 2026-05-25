@@ -74,11 +74,11 @@ if (cvTextInput) {
 }
 
 // Generate List Items HTML
-function generateListHTML(items, iconColorClass, iconName = 'check_circle') {
+function generateListHTML(items, bulletColorClass) {
     if (!items || items.length === 0) return `<li class="text-sm text-muted-foreground italic">None identified.</li>`;
     return items.map(item => `
         <li class="flex items-start gap-3 hover-card-effect p-2 rounded-lg border border-transparent transition-all">
-            <span class="material-symbols-outlined text-${iconColorClass} text-lg shrink-0 mt-0.5">${iconName}</span>
+            <span class="mt-2 w-1.5 h-1.5 rounded-full bg-${bulletColorClass} shrink-0"></span>
             <span class="text-sm text-foreground leading-relaxed">${item}</span>
         </li>
     `).join('');
@@ -87,9 +87,9 @@ function generateListHTML(items, iconColorClass, iconName = 'check_circle') {
 function generateSuggestionCards(items) {
     if (!items || items.length === 0) return `<div class="text-sm text-muted-foreground italic col-span-2">No recommendations.</div>`;
     return items.map(item => `
-        <li class="bg-muted/10 border border-border rounded-xl p-4 flex gap-3 hover-card-effect">
+        <li class="bg-[#1A1F2E] border border-[#2A3041] rounded-xl p-4 flex gap-3 hover-card-effect">
             <span class="material-symbols-outlined text-blue-400 text-lg shrink-0 mt-0.5">info</span>
-            <span class="text-sm text-muted-foreground">${item}</span>
+            <span class="text-sm text-foreground">${item}</span>
         </li>
     `).join('');
 }
@@ -98,7 +98,7 @@ function generateRedFlagCards(items) {
     if (!items || items.length === 0) return `<div class="text-sm text-muted-foreground italic col-span-2">No red flags detected. Great job!</div>`;
     return items.map(item => `
         <li class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex gap-3 hover-card-effect">
-            <span class="material-symbols-outlined text-red-500 text-lg shrink-0 mt-0.5">error</span>
+            <span class="material-symbols-outlined text-red-500 text-lg shrink-0 mt-0.5">flag</span>
             <span class="text-sm text-foreground">${item}</span>
         </li>
     `).join('');
@@ -165,8 +165,8 @@ analyzeBtn.addEventListener('click', async () => {
             scoreDesc.textContent = "This candidate does not align well with the primary requirements.";
         }
 
-        document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500', 'check_circle');
-        document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500', 'warning');
+        document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500');
+        document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500');
         document.getElementById('list-red-flags').innerHTML = generateRedFlagCards(data.red_flags);
         document.getElementById('list-suggestions').innerHTML = generateSuggestionCards(data.suggestions);
 
