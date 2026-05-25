@@ -61,9 +61,9 @@ async def analyze_resume(
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
-                system_instruction="""You are a strict, highly critical ATS (Applicant Tracking System) and expert technical recruiter. You score resumes realistically and harshly. Deduct points heavily for missing required skills, vague experience, or lack of measurable impact. Recommendations must explicitly reference the specific context and exact wording from the Job Description. Extract the most likely Job Title from the Job Description.
+                system_instruction="""You are an expert technical recruiter and resume analyzer. You score resumes realistically and evaluate them for missing required skills, vague experience, or lack of measurable impact. Recommendations must explicitly reference the specific context and exact wording from the Job Description. Extract the most likely Job Title from the Job Description.
                 Return ONLY valid JSON matching this schema: 
-                {"job_title": str, "match_percentage": int, "section_scores": {"experience": int, "education": int, "skills": int}, "key_strengths": [str], "skill_gaps": [str], "suggestions": [str]}""",
+                {"job_title": str, "match_percentage": int, "key_strengths": [str], "skill_gaps": [str], "suggestions": [str]}""",
                 temperature=0.2 
             ),
         )
