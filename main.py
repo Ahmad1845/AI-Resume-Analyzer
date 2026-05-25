@@ -63,7 +63,7 @@ async def analyze_resume(
                 response_mime_type="application/json",
                 system_instruction="""You are an expert technical recruiter. Analyze the CV against the Job Description. 
                 Return ONLY valid JSON matching this schema: 
-                {"match_percentage": int, "key_strengths": [str], "skill_gaps": [str], "suggestions": [str]}""",
+                {"match_percentage": int, "section_scores": {"experience": int, "education": int, "skills": int}, "key_strengths": [str], "skill_gaps": [str], "suggestions": [str]}""",
                 temperature=0.2 
             ),
         )

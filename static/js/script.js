@@ -92,6 +92,29 @@ function generateSuggestionCards(items) {
     `).join('');
 }
 
+function generateSectionScoresHTML(scores) {
+    if (!scores || Object.keys(scores).length === 0) return `<div class="col-span-full text-sm text-muted-foreground italic">No section scores available.</div>`;
+    
+    return Object.entries(scores).map(([section, score]) => {
+        const sectionName = section.charAt(0).toUpperCase() + section.slice(1);
+        let colorClass = 'bg-chart-3';
+        if (score >= 75) colorClass = 'bg-chart-1';
+        else if (score >= 50) colorClass = 'bg-chart-2';
+        
+        return `
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center text-sm font-medium">
+                    <span class="text-foreground">${sectionName}</span>
+                    <span class="text-muted-foreground">${score}/100</span>
+                </div>
+                <div class="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
+                    <div class="h-full ${colorClass} rounded-full transition-all duration-1000 ease-out" style="width: 0%" data-target-width="${score}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 // Analysis Execution
 analyzeBtn.addEventListener('click', async () => {
     const cvTextValue = cvTextInput ? cvTextInput.value.trim() : '';
@@ -150,6 +173,18 @@ analyzeBtn.addEventListener('click', async () => {
         document.getElementById('list-strengths').innerHTML = generateListHTML(data.key_strengths, 'emerald-500');
         document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500');
         document.getElementById('list-suggestions').innerHTML = generateSuggestionCards(data.suggestions);
+
+        const sectionScoresContainer = document.getElementById('section-scores-container');
+        if (sectionScoresContainer) {
+            sectionScoresContainer.innerHTML = generateSectionScoresHTML(data.section_scores);
+            // Animate progress bars
+            setTimeout(() => {
+                const bars = sectionScoresContainer.querySelectorAll('[data-target-width]');
+                bars.forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-target-width');
+                });
+            }, 100);
+        }
 
         // UI State to Results
         loadingState.classList.add('hidden');
