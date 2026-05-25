@@ -57,7 +57,7 @@ async def analyze_resume(
         
         user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{extracted_cv_text}"
         
-        model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+        model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
         
         response = client.models.generate_content(
             model=model_name,
