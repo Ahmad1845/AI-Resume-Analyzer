@@ -147,8 +147,26 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML = `Analyzing <span class="material-symbols-outlined ml-2 text-[18px] animate-spin">refresh</span>`;
 
-    // Dynamic Loading Text (controlled by backend now)
-    if (loadingText) loadingText.textContent = "Connecting to server...";
+    // Dynamic Loading Text
+    const loadingMessages = [
+        "Parsing document structure...",
+        "Extracting candidate skills...",
+        "Cross-referencing Job Description...",
+        "Calculating ATS Match Score...",
+        "Generating final report..."
+    ];
+    let msgIndex = 0;
+    if (loadingText) loadingText.textContent = loadingMessages[0];
+    const loadingInterval = setInterval(() => {
+        msgIndex = (msgIndex + 1) % loadingMessages.length;
+        if (loadingText) {
+            loadingText.style.opacity = 0;
+            setTimeout(() => {
+                loadingText.textContent = loadingMessages[msgIndex];
+                loadingText.style.opacity = 1;
+            }, 300);
+        }
+    }, 2000);
 
     const formData = new FormData();
     if (selectedFile) formData.append("cv", selectedFile);
@@ -157,53 +175,9 @@ analyzeBtn.addEventListener('click', async () => {
 
     try {
         const response = await fetch('/api/analyze', { method: 'POST', body: formData });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let data = null;
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\\n');
-            buffer = lines.pop(); // keep incomplete line in buffer
-
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const jsonStr = line.substring(6);
-                    if (!jsonStr.trim()) continue;
-                    
-                    try {
-                        const parsed = JSON.parse(jsonStr);
-                        if (parsed.error) {
-                            throw new Error(parsed.error);
-                        } else if (parsed.status) {
-                            if (loadingText) {
-                                loadingText.style.opacity = 0;
-                                setTimeout(() => {
-                                    loadingText.textContent = parsed.status;
-                                    loadingText.style.opacity = 1;
-                                }, 200);
-                            }
-                        } else if (parsed.result) {
-                            data = parsed.result;
-                        }
-                    } catch (e) {
-                        if (e.message !== "Unexpected end of JSON input" && !jsonStr.includes('error')) {
-                            console.error("JSON Parse error:", e, jsonStr);
-                        } else if (jsonStr.includes('error')) {
-                            throw new Error(jsonStr); // Throw the raw string if it's an error object that failed to parse
-                        }
-                    }
-                }
-            }
-        }
+        const data = await response.json();
         
-        if (!data) throw new Error("No analysis data received from server.");
+        if(data.error) throw new Error(data.error);
 
         // Populate Data
         const score = data.match_percentage || 0;
@@ -276,6 +250,7 @@ analyzeBtn.addEventListener('click', async () => {
         resultsDisplay.classList.add('hidden');
         emptyState.classList.remove('hidden');
     } finally {
+        clearInterval(loadingInterval);
         analyzeBtn.disabled = false;
         analyzeBtn.innerHTML = `Analyze Resume <span class="material-symbols-outlined ml-2 text-[18px]">arrow_forward</span>`;
     }

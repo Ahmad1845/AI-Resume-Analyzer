@@ -26,10 +26,6 @@ async def serve_ui():
     with open(os.path.join(BASE_DIR, "index.html"), "r", encoding="utf-8") as f:
         return f.read()
 
-from fastapi.responses import HTMLResponse, StreamingResponse
-import asyncio
-import io
-
 # 4. This is the logic that reads the PDF and asks Gemini for the analysis
 @app.post("/api/analyze")
 async def analyze_resume(
@@ -37,58 +33,38 @@ async def analyze_resume(
     cv: UploadFile = File(None), 
     cv_text: str = Form(None)
 ):
-    # Read the file fully into memory immediately
-    cv_content = None
-    cv_filename = None
-    if cv and cv.filename:
-        cv_filename = cv.filename
-        cv_content = await cv.read()
+    try:
+        extracted_cv_text = ""
         
-    async def analyze_generator():
-        try:
-            # Step 1: Document Parsing
-            yield f"data: {json.dumps({'status': 'Parsing document structure...'})}\n\n"
-            await asyncio.sleep(0.5) # Give UI time to animate
-            
-            extracted_cv_text = ""
-            
-            if cv_filename:
-                if cv_filename.lower().endswith(".pdf"):
-                    reader = PyPDF2.PdfReader(io.BytesIO(cv_content))
-                    for page in reader.pages:
-                        extracted = page.extract_text()
-                        if extracted:
-                            extracted_cv_text += extracted + "\n"
-                elif cv_filename.lower().endswith(".docx"):
-                    doc = docx.Document(io.BytesIO(cv_content))
-                    extracted_cv_text = "\n".join([para.text for para in doc.paragraphs])
-                elif cv_filename.lower().endswith(".txt"):
-                    extracted_cv_text = cv_content.decode("utf-8")
-                else:
-                    yield f"data: {json.dumps({'error': 'Unsupported file format. Please upload PDF, DOCX, or TXT.'})}\n\n"
-                    return
-            elif cv_text and cv_text.strip():
-                extracted_cv_text = cv_text.strip()
+        if cv and cv.filename:
+            if cv.filename.lower().endswith(".pdf"):
+                reader = PyPDF2.PdfReader(cv.file)
+                for page in reader.pages:
+                    extracted = page.extract_text()
+                    if extracted:
+                        extracted_cv_text += extracted + "\n"
+            elif cv.filename.lower().endswith(".docx"):
+                doc = docx.Document(cv.file)
+                extracted_cv_text = "\n".join([para.text for para in doc.paragraphs])
+            elif cv.filename.lower().endswith(".txt"):
+                extracted_cv_text = (await cv.read()).decode("utf-8")
             else:
-                yield f"data: {json.dumps({'error': 'Please provide either a CV file or paste the CV text.'})}\n\n"
-                return
-                
-            # Step 2: Extracting Skills & Cross-referencing
-            yield f"data: {json.dumps({'status': 'Extracting candidate skills...'})}\n\n"
-            await asyncio.sleep(0.5)
-            
-            yield f"data: {json.dumps({'status': 'Cross-referencing Job Description with Gemini AI...'})}\n\n"
-            
-            user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{extracted_cv_text}"
-            model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
-            
-            def call_gemini():
-                return client.models.generate_content(
-                    model=model_name,
-                    contents=user_prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        system_instruction="""You are a ruthless, expert technical recruiter and ATS parsing engine. Your job is to critically evaluate resumes against a Job Description (JD).
+                return {"error": "Unsupported file format. Please upload PDF, DOCX, or TXT."}
+        elif cv_text and cv_text.strip():
+            extracted_cv_text = cv_text.strip()
+        else:
+            return {"error": "Please provide either a CV file or paste the CV text."}
+        
+        user_prompt = f"JOB DESCRIPTION:\n{jd}\n\nCANDIDATE CV:\n{extracted_cv_text}"
+        
+        model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        
+        response = client.models.generate_content(
+            model=model_name,
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                system_instruction="""You are a ruthless, expert technical recruiter and ATS parsing engine. Your job is to critically evaluate resumes against a Job Description (JD).
                 RULES:
                 1. STRICT SCORING: If the CV is missing core/mandatory skills explicitly listed in the JD, the `match_percentage` MUST NOT exceed 75%. Be realistic and highly critical. Do not inflate scores.
                 2. CONCISE BULLETS: Every bullet point in strengths, gaps, red flags, and suggestions MUST be extremely concise (1-2 short lines max).
@@ -97,29 +73,20 @@ async def analyze_resume(
                 Extract the most likely Job Title from the JD.
                 Return ONLY valid JSON matching this schema: 
                 {"job_title": str, "match_percentage": int, "key_strengths": [str], "skill_gaps": [str], "red_flags": [str], "suggestions": [str], "section_scores": [{"section_name": str, "score": int, "feedback": str}]}""",
-                        temperature=0.2 
-                    ),
-                )
+                temperature=0.2 
+            ),
+        )
+        
+        raw_text = response.text.strip()
+        if raw_text.startswith("```json"):
+            raw_text = raw_text[7:]
+        elif raw_text.startswith("```"):
+            raw_text = raw_text[3:]
+        if raw_text.endswith("```"):
+            raw_text = raw_text[:-3]
             
-            response = await asyncio.to_thread(call_gemini)
-            
-            # Step 3: Final Report
-            yield f"data: {json.dumps({'status': 'Generating final report...'})}\n\n"
-            await asyncio.sleep(0.5)
-            
-            raw_text = response.text.strip()
-            if raw_text.startswith("```json"):
-                raw_text = raw_text[7:]
-            elif raw_text.startswith("```"):
-                raw_text = raw_text[3:]
-            if raw_text.endswith("```"):
-                raw_text = raw_text[:-3]
-                
-            yield f"data: {json.dumps({'result': json.loads(raw_text.strip())})}\n\n"
-            
-        except Exception as e:
-            yield f"data: {json.dumps({'error': str(e)})}\n\n"
-
-    return StreamingResponse(analyze_generator(), media_type="text/event-stream")
-
+        return json.loads(raw_text.strip())
+    
+    except Exception as e:
+        return {"error": str(e)}
     
