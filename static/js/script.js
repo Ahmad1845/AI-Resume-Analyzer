@@ -144,6 +144,11 @@ analyzeBtn.addEventListener('click', async () => {
     emptyState.classList.add('hidden');
     resultsDisplay.classList.add('hidden');
     loadingState.classList.remove('hidden');
+    
+    if (window.innerWidth < 768) {
+        loadingState.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML = `Analyzing <span class="material-symbols-outlined ml-2 text-[18px] animate-spin">refresh</span>`;
 
