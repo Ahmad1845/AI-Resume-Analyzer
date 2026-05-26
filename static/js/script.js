@@ -158,7 +158,11 @@ analyzeBtn.addEventListener('click', async () => {
     let msgIndex = 0;
     if (loadingText) loadingText.textContent = loadingMessages[0];
     const loadingInterval = setInterval(() => {
-        msgIndex = (msgIndex + 1) % loadingMessages.length;
+        msgIndex++;
+        if (msgIndex >= loadingMessages.length) {
+            clearInterval(loadingInterval);
+            return;
+        }
         if (loadingText) {
             loadingText.style.opacity = 0;
             setTimeout(() => {
