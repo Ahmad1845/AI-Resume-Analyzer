@@ -48,7 +48,16 @@
                 }
             }
         }
-    </script>
+    <style>
+        @keyframes scan {
+            0%, 100% { transform: translateY(0); opacity: 0; }
+            10%, 90% { opacity: 1; }
+            50% { transform: translateY(64px); }
+        }
+        .animate-scan {
+            animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+    </style>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="min-h-screen flex flex-col md:flex-row md:overflow-hidden">
@@ -115,24 +124,22 @@
     <div class="w-full md:w-7/12 lg:w-2/3 flex-1 bg-background min-h-screen md:h-screen md:min-h-0 overflow-y-auto relative">
         
         <!-- Empty State -->
-        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8 text-center overflow-hidden">
-            <!-- Blurred UI Background -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center opacity-[0.15] pointer-events-none filter blur-[6px] scale-[0.98]">
-                <div class="w-40 h-40 rounded-full border-[8px] border-emerald-500/50 mb-8"></div>
-                <div class="w-64 h-8 bg-card rounded-md mb-4"></div>
-                <div class="w-48 h-4 bg-muted rounded-md mb-12"></div>
-                <div class="grid grid-cols-2 gap-6 w-full max-w-2xl px-12">
-                    <div class="h-32 bg-card rounded-xl border-l-4 border-emerald-500/50"></div>
-                    <div class="h-32 bg-card rounded-xl border-l-4 border-amber-500/50"></div>
-                </div>
-            </div>
+        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8 text-center overflow-hidden bg-[#0B0F19]">
+            <!-- Tech Grid Background -->
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+            <!-- Glowing Orb Effect -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-96 h-96 bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none animate-pulse" style="animation-duration: 4s;"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none animate-pulse" style="animation-duration: 5s; animation-delay: 1s;"></div>
             
             <!-- Foreground Content -->
-            <div class="w-24 h-24 rounded-full bg-[#1A1F2E] flex items-center justify-center mb-6 relative z-10 border border-[#2A3041] shadow-[0_0_50px_rgba(139,92,246,0.1)] transition-transform hover:scale-105 duration-300">
-                <span class="material-symbols-outlined text-5xl text-indigo-400">document_scanner</span>
+            <div class="w-28 h-28 rounded-2xl bg-[#1A1F2E]/80 backdrop-blur-md flex items-center justify-center mb-8 relative z-10 border border-[#2A3041] shadow-[0_0_40px_rgba(52,211,153,0.15)] transition-transform hover:scale-105 duration-500 hover:shadow-[0_0_60px_rgba(52,211,153,0.25)] hover:border-emerald-500/30 group">
+                <span class="material-symbols-outlined text-6xl text-emerald-400 group-hover:text-emerald-300 transition-colors duration-500" style="font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 48;">document_scanner</span>
+                <!-- Scanning laser animation -->
+                <div class="absolute inset-x-5 top-4 h-0.5 bg-emerald-400/90 shadow-[0_0_8px_2px_rgba(52,211,153,0.6)] rounded-full opacity-0 group-hover:opacity-100 animate-scan"></div>
             </div>
-            <h2 class="text-2xl font-bold mb-3 relative z-10 tracking-tight text-foreground">Awaiting Input</h2>
-            <p class="text-muted-foreground max-w-sm relative z-10 leading-relaxed text-sm">Upload a CV and paste a Job Description to unleash the AI parsing engine.</p>
+            <h2 class="text-3xl font-extrabold mb-4 relative z-10 tracking-tight text-white drop-shadow-sm">Awaiting Input</h2>
+            <p class="text-muted-foreground/80 max-w-md relative z-10 leading-relaxed text-base font-medium">Upload a CV and paste a Job Description to unleash the <span class="text-emerald-400/90 font-semibold">AI parsing engine</span>.</p>
         </div>
 
         <!-- Loading State -->

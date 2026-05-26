@@ -73,7 +73,7 @@ async def analyze_resume(
                 Extract the most likely Job Title from the JD.
                 Return ONLY valid JSON matching this schema: 
                 {"job_title": str, "match_percentage": int, "key_strengths": [str], "skill_gaps": [str], "red_flags": [str], "suggestions": [str], "section_scores": [{"section_name": str, "score": int, "feedback": str}]}""",
-                temperature=0.2 
+                temperature=0.1 
             ),
         )
         
