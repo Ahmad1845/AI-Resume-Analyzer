@@ -104,6 +104,28 @@ function generateRedFlagCards(items) {
     `).join('');
 }
 
+function generateSectionScoresHTML(sectionScores) {
+    if (!sectionScores || sectionScores.length === 0) return '';
+    return sectionScores.map((sec, index) => {
+        let colorClass = 'bg-chart-3'; // Red
+        if (sec.score >= 75) colorClass = 'bg-chart-1'; // Green
+        else if (sec.score >= 50) colorClass = 'bg-chart-2'; // Yellow
+        
+        return `
+            <div class="flex flex-col gap-2 p-4 bg-[#1A1F2E] border border-[#2A3041] rounded-xl hover-card-effect">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-semibold text-foreground">${sec.section_name}</span>
+                    <span class="text-sm font-bold text-foreground">${sec.score}/100</span>
+                </div>
+                <div class="w-full bg-[#0B0F19] rounded-full h-2 border border-[#2A3041] overflow-hidden">
+                    <div class="${colorClass} h-2 rounded-full" style="width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s" data-width="${sec.score}%"></div>
+                </div>
+                <p class="text-xs text-muted-foreground mt-1">${sec.feedback}</p>
+            </div>
+        `;
+    }).join('');
+}
+
 // Analysis Execution
 analyzeBtn.addEventListener('click', async () => {
     const cvTextValue = cvTextInput ? cvTextInput.value.trim() : '';
@@ -169,6 +191,22 @@ analyzeBtn.addEventListener('click', async () => {
         document.getElementById('list-gaps').innerHTML = generateListHTML(data.skill_gaps, 'amber-500');
         document.getElementById('list-red-flags').innerHTML = generateRedFlagCards(data.red_flags);
         document.getElementById('list-suggestions').innerHTML = generateSuggestionCards(data.suggestions);
+        
+        const sectionScoresContainer = document.getElementById('section-scores-container');
+        if (data.section_scores && data.section_scores.length > 0) {
+            sectionScoresContainer.classList.remove('hidden');
+            sectionScoresContainer.classList.add('flex');
+            document.getElementById('list-section-scores').innerHTML = generateSectionScoresHTML(data.section_scores);
+            // Trigger animation
+            setTimeout(() => {
+                document.querySelectorAll('#list-section-scores > div > div > div').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-width');
+                });
+            }, 100);
+        } else {
+            sectionScoresContainer.classList.add('hidden');
+            sectionScoresContainer.classList.remove('flex');
+        }
 
         // UI State to Results
         loadingState.classList.add('hidden');
