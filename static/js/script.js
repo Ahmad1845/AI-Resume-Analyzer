@@ -8,6 +8,7 @@ const analyzeBtn = document.getElementById('analyze-btn');
 
 const emptyState = document.getElementById('empty-state');
 const loadingState = document.getElementById('loading-state');
+const loadingText = document.getElementById('loading-text');
 const resultsDisplay = document.getElementById('results-display');
 
 const scoreText = document.getElementById('score-text');
@@ -146,6 +147,27 @@ analyzeBtn.addEventListener('click', async () => {
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML = `Analyzing <span class="material-symbols-outlined ml-2 text-[18px] animate-spin">refresh</span>`;
 
+    // Dynamic Loading Text
+    const loadingMessages = [
+        "Parsing document structure...",
+        "Extracting candidate skills...",
+        "Cross-referencing Job Description...",
+        "Calculating ATS Match Score...",
+        "Generating final report..."
+    ];
+    let msgIndex = 0;
+    if (loadingText) loadingText.textContent = loadingMessages[0];
+    const loadingInterval = setInterval(() => {
+        msgIndex = (msgIndex + 1) % loadingMessages.length;
+        if (loadingText) {
+            loadingText.style.opacity = 0;
+            setTimeout(() => {
+                loadingText.textContent = loadingMessages[msgIndex];
+                loadingText.style.opacity = 1;
+            }, 300);
+        }
+    }, 2000);
+
     const formData = new FormData();
     if (selectedFile) formData.append("cv", selectedFile);
     if (cvTextValue) formData.append("cv_text", cvTextValue);
@@ -228,6 +250,7 @@ analyzeBtn.addEventListener('click', async () => {
         resultsDisplay.classList.add('hidden');
         emptyState.classList.remove('hidden');
     } finally {
+        clearInterval(loadingInterval);
         analyzeBtn.disabled = false;
         analyzeBtn.innerHTML = `Analyze Resume <span class="material-symbols-outlined ml-2 text-[18px]">arrow_forward</span>`;
     }
