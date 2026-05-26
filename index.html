@@ -57,9 +57,9 @@
     <div class="w-full md:w-5/12 lg:w-1/3 flex flex-col md:border-r border-b md:border-b-0 border-border bg-background z-10 h-auto md:h-screen overflow-y-auto custom-scrollbar">
         <div class="p-6 flex flex-col h-full">
             <div class="mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <h1 class="text-3xl font-extrabold tracking-tight flex items-center gap-2">
-                        <span class="material-symbols-outlined text-emerald-400 text-3xl">document_scanner</span>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2">
+                        <span class="material-symbols-outlined text-emerald-400 text-2xl md:text-3xl">document_scanner</span>
                         <span class="text-gradient">Resume Analyzer</span>
                     </h1>
                     <span class="inline-flex items-center gap-1 rounded-full bg-[#1A1F2E] px-2.5 py-1 text-[11px] font-medium text-[#8B5CF6] border border-[#2A3041]">
@@ -115,7 +115,7 @@
     <div class="w-full md:w-7/12 lg:w-2/3 flex-1 bg-background min-h-screen md:h-screen md:min-h-0 overflow-y-auto relative">
         
         <!-- Empty State -->
-        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center overflow-hidden">
+        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8 text-center overflow-hidden">
             <!-- Decorative floating icons -->
             <div class="absolute top-[20%] left-[20%] animate-bounce" style="animation-duration: 4s;"><span class="material-symbols-outlined text-muted-foreground/10 text-6xl">description</span></div>
             <div class="absolute bottom-[20%] right-[20%] animate-bounce" style="animation-duration: 5s;"><span class="material-symbols-outlined text-muted-foreground/10 text-7xl">work_outline</span></div>
@@ -130,7 +130,7 @@
         </div>
 
         <!-- Loading State -->
-        <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center p-8 hidden bg-background/50 backdrop-blur-sm z-20">
+        <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8 hidden bg-background/50 backdrop-blur-sm z-20">
             <div class="flex items-center gap-3 mb-6">
                 <span class="material-symbols-outlined animate-spin text-primary text-3xl">progress_activity</span>
                 <h2 class="text-xl font-semibold">Analyzing Match...</h2>
@@ -148,10 +148,10 @@
         </div>
 
         <!-- Results Display -->
-        <div id="results-display" class="hidden min-h-full p-8 lg:p-12 pb-24 text-foreground bg-background">
+        <div id="results-display" class="hidden min-h-full p-4 md:p-8 lg:p-12 pb-24 text-foreground bg-background">
             
             <!-- Actions Header -->
-            <div class="flex justify-end gap-3 mb-6">
+            <div class="flex flex-wrap justify-end gap-3 mb-6">
                 <button id="reset-btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 h-9 px-4 py-2 shadow-sm">
                     <span class="material-symbols-outlined mr-2 text-[16px]">add</span>
                     New Analysis
@@ -159,7 +159,7 @@
             </div>
 
             <!-- Top Section: Score -->
-            <div class="glass-panel p-8 mb-8 flex flex-col md:flex-row items-center gap-8 fade-in">
+            <div class="glass-panel p-4 md:p-8 mb-8 flex flex-col md:flex-row items-center gap-6 md:gap-8 fade-in">
                 
                 <!-- Circular Chart -->
                 <div class="relative flex items-center justify-center">
@@ -176,15 +176,15 @@
                 </div>
 
                 <!-- Summary text -->
-                <div class="flex-1 text-center md:text-left">
-                    <h2 class="text-3xl font-extrabold mb-2 text-foreground tracking-tight" id="score-title">Strong Match</h2>
-                    <h3 class="text-xl font-semibold text-emerald-400 mb-3 flex items-center gap-2" id="result-job-title"></h3>
+                <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
+                    <h2 class="text-2xl md:text-3xl font-extrabold mb-2 text-foreground tracking-tight" id="score-title">Strong Match</h2>
+                    <h3 class="text-lg md:text-xl font-semibold text-emerald-400 mb-3 flex items-center justify-center md:justify-start gap-2" id="result-job-title"></h3>
                     <p class="text-muted-foreground" id="score-description">This candidate has a very good alignment with the core requirements. Below are the detailed insights extracted from the resume.</p>
                 </div>
             </div>
 
             <!-- Section Scores -->
-            <div id="section-scores-container" class="glass-panel p-8 mb-8 flex flex-col fade-in hidden">
+            <div id="section-scores-container" class="glass-panel p-4 md:p-8 mb-8 flex flex-col fade-in hidden">
                 <h3 class="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined text-indigo-400">query_stats</span>
                     Section-by-Section ATS Breakdown
